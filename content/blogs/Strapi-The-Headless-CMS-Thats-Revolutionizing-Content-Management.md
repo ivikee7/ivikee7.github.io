@@ -4,13 +4,6 @@ date: 2024-11-28T23:44:09+05:30
 draft: false
 ---
 
-# Strapi: The Headless CMS That's Revolutionizing Content Management
-
-**Author**: Technical Content Team  
-**Published**: November 25, 2024  
-**Reading Time**: 8 minutes  
-**Tags**: headless-cms, javascript, nodejs, content-management, api
-
 ## Introduction
 
 In the ever-evolving landscape of content management systems, Strapi has emerged as a game-changer. This open-source headless CMS is transforming how developers and content creators collaborate, offering unprecedented flexibility and control over content delivery.
