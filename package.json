@@ -1,8 +1,8 @@
 {
-  "name": "7tech-tips",
+  "name": "my-gatsby-site",
   "version": "1.0.0",
   "private": true,
-  "description": "7tech-tips",
+  "description": "my-gatsby-site",
   "keywords": [
     "gatsby"
   ],
@@ -15,7 +15,16 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@mdx-js/react": "^3.1.0",
     "gatsby": "^5.14.0",
+    "gatsby-plugin-image": "^3.14.0",
+    "gatsby-plugin-manifest": "^5.14.0",
+    "gatsby-plugin-mdx": "^5.14.0",
+    "gatsby-plugin-sharp": "^5.14.0",
+    "gatsby-plugin-sitemap": "^6.14.0",
+    "gatsby-source-filesystem": "^5.14.0",
+    "gatsby-transformer-remark": "^6.14.0",
+    "gatsby-transformer-sharp": "^5.14.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
