@@ -1,0 +1,22 @@
+import MdxLayout from '@/components/layout-mdx'
+
+export const metadata = {
+    title: "Documentation page",
+    description: "This is our main page of documentation.",
+};
+
+# Welcome to my MDX page!
+ 
+This is some **bold** and _italics_ text.
+ 
+This is a list in markdown:
+ 
+- One
+- Two
+- Three
+ 
+Checkout my React component:
+ 
+export default function MDXPage({ children }) {
+    return <MdxLayout>{children}</MdxLayout>
+}
