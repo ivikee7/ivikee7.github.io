@@ -6,7 +6,7 @@ import starlight from '@astrojs/starlight';
 export default defineConfig({
 	integrations: [
 		starlight({
-			title: 'My Docs',
+			title: '7TechTips',
 			social: {
 				github: 'https://github.com/withastro/starlight',
 			},
