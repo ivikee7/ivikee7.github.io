@@ -8,7 +8,7 @@ export default defineConfig({
 		starlight({
 			title: '7TechTips',
 			social: {
-				github: 'https://github.com/withastro/starlight',
+				github: 'https://github.com/ivikee7/',
 			},
 			sidebar: [
 				{
