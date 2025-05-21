@@ -8,7 +8,7 @@ const nextConfig = withMDX({
   output: 'export',
   trailingSlash: true,
   images: { unoptimized: true },
-  pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
 })
 
 export default nextConfig
