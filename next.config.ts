@@ -1,15 +1,19 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  extension: /\.mdx?$/,
-};
-
+// import type { NextConfig } from "next";
+import createMDX from '@next/mdx'
+ 
+/** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Important for GitHub Pages static export:
-  output: 'export',
-  trailingSlash: true, // Ensures compatibility with static hosting
-  images: { unoptimized: true }, // Required when using `next export`
-  pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
-};
-
-export default withMDX(nextConfig);
+  // output: 'export',
+  // trailingSlash: true,
+  // images: { unoptimized: true },
+  // Configure `pageExtensions` to include markdown and MDX files
+  pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+  // Optionally, add any other Next.js config below
+}
+ 
+const withMDX = createMDX({
+  extension: /\.(md|mdx)$/,
+})
+ 
+// Merge MDX config with Next.js config
+export default withMDX(nextConfig)
