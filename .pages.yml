@@ -1,0 +1,26 @@
+# Basic Pages CMS Configuration Template
+media:
+  input: "content/assets"
+  output: "/assets"
+
+content:
+  # Collection for Blog Posts
+  - name: blog
+    label: "Blog"
+    type: collection
+    path: "content/blog"
+    filename: "{slug}.md"
+    fields:
+      - { name: title, label: "Title", type: string, required: true }
+      - { name: body, label: "Content", type: rich-text }
+
+  # Collection for Documentation
+  - name: docs
+    label: "Docs"
+    type: collection
+    path: "content/docs"
+    filename: "{slug}.md"
+    fields:
+      - { name: title, label: "Title", type: string, required: true }
+      - { name: body, label: "Content", type: rich-text }
+      
