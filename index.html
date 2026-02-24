@@ -3,100 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grand Curtain Theatre | Now Showing</title>
+    <title>Theatre Dynamic Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .hero-gradient {
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1503095396549-8071f997c30c?auto=format&fit=crop&q=80&w=1920');
-            background-size: cover;
-            background-position: center;
-        }
+        .dropdown:hover .dropdown-menu { display: block; }
+        .hero-bg { background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?q=80&w=2070'); background-size: cover; }
     </style>
 </head>
-<body class="bg-zinc-950 text-white font-sans">
+<body class="bg-zinc-950 text-white">
 
-    <nav class="flex justify-between items-center p-6 border-b border-zinc-800 bg-black/50 backdrop-blur-md sticky top-0 z-50">
-        <h1 class="text-2xl font-bold tracking-tighter text-red-600">GRAND <span class="text-white">CURTAIN</span></h1>
-        <div class="hidden md:flex space-x-8 text-sm font-medium uppercase tracking-widest">
-            <a href="#" class="hover:text-red-500 transition">Shows</a>
-            <a href="#" class="hover:text-red-500 transition">The Company</a>
-            <a href="#" class="hover:text-red-500 transition">Education</a>
-            <a href="#" class="hover:text-red-500 transition">Support Us</a>
+    <nav class="flex justify-between items-center p-6 bg-black border-b border-zinc-800 sticky top-0 z-50">
+        <div class="flex items-center space-x-10">
+            <h1 class="text-2xl font-bold text-red-600 tracking-tighter">THEATRE<span class="text-white">OS</span></h1>
+            
+            <div class="hidden md:flex space-x-6 items-center">
+                <a href="/" class="hover:text-red-500 transition text-sm uppercase font-bold">Home</a>
+                
+                <div class="relative dropdown">
+                    <button class="flex items-center hover:text-red-500 transition text-sm uppercase font-bold outline-none">
+                        Productions <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                    </button>
+                    <ul id="dynamic-menu" class="dropdown-menu absolute hidden bg-zinc-900 border border-zinc-800 w-48 py-2 mt-0 rounded-md shadow-xl">
+                        <li class="px-4 py-2 text-zinc-500 text-xs italic">Loading shows...</li>
+                    </ul>
+                </div>
+            </div>
         </div>
-        <button class="bg-red-600 hover:bg-red-700 px-6 py-2 rounded-full text-sm font-bold transition">BOOK TICKETS</button>
+        <button class="bg-red-600 px-5 py-2 rounded text-sm font-bold">MEMBER LOGIN</button>
     </nav>
 
-    <header class="hero-gradient h-[80vh] flex flex-col justify-center items-center text-center px-4">
-        <span class="text-red-500 font-bold tracking-[0.3em] mb-4">NOW PLAYING</span>
-        <h2 class="text-6xl md:text-8xl font-serif mb-6">Macbeth</h2>
-        <p class="max-w-2xl text-zinc-300 text-lg mb-8">A haunting reimagining of Shakespeare’s classic tale of ambition, power, and the supernatural. Experience the tragedy like never before.</p>
-        <div class="flex space-x-4">
-            <button class="bg-white text-black px-8 py-3 font-bold hover:bg-zinc-200 transition">View Dates</button>
-            <button class="border border-white px-8 py-3 font-bold hover:bg-white/10 transition">Watch Trailer</button>
-        </div>
+    <header class="hero-bg h-[60vh] flex flex-col justify-center items-center text-center">
+        <h2 class="text-5xl font-serif mb-4">Automated Stage Management</h2>
+        <p class="text-zinc-400 max-w-lg">This homepage automatically syncs with your GitHub subdirectories to generate navigation menus in real-time.</p>
     </header>
 
-    <section class="py-20 px-6 max-w-7xl mx-auto">
-        <div class="flex justify-between items-end mb-12">
-            <div>
-                <h3 class="text-3xl font-bold">2026 Season</h3>
-                <p class="text-zinc-400">Experience the magic of live performance.</p>
+    <main class="max-w-6xl mx-auto py-16 px-6">
+        <h3 class="text-2xl font-bold mb-8 border-l-4 border-red-600 pl-4">Detected Sub-Directories</h3>
+        <div id="dir-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
             </div>
-            <a href="#" class="text-red-500 border-b border-red-500 pb-1 hover:text-red-400">View All Shows</a>
-        </div>
+    </main>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="group cursor-pointer">
-                <div class="overflow-hidden mb-4 rounded-lg">
-                    <img src="https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&q=80&w=800" alt="Show" class="group-hover:scale-105 transition duration-500 h-96 w-full object-cover">
-                </div>
-                <h4 class="text-xl font-bold">The Phantom Echo</h4>
-                <p class="text-zinc-500 mb-2">Musical • Main Stage</p>
-                <button class="text-sm font-bold text-red-500 group-hover:underline">GET TICKETS →</button>
-            </div>
+    <script>
+        // CONFIGURATION: Replace with your GitHub details
+        const GITHUB_USER = 'YOUR_USERNAME'; 
+        const GITHUB_REPO = 'YOUR_REPO_NAME';
 
-            <div class="group cursor-pointer">
-                <div class="overflow-hidden mb-4 rounded-lg">
-                    <img src="https://images.unsplash.com/photo-1514302240736-b1fee5989461?auto=format&fit=crop&q=80&w=800" alt="Show" class="group-hover:scale-105 transition duration-500 h-96 w-full object-cover">
-                </div>
-                <h4 class="text-xl font-bold">Midnight in Paris</h4>
-                <p class="text-zinc-500 mb-2">Drama • Studio B</p>
-                <button class="text-sm font-bold text-red-500 group-hover:underline">GET TICKETS →</button>
-            </div>
+        async function fetchDirectories() {
+            const menuContainer = document.getElementById('dynamic-menu');
+            const gridContainer = document.getElementById('dir-grid');
+            
+            try {
+                // Fetch repository contents from GitHub API
+                const response = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/`);
+                const items = await response.json();
 
-            <div class="group cursor-pointer">
-                <div class="overflow-hidden mb-4 rounded-lg">
-                    <img src="https://images.unsplash.com/photo-1470229722913-d7d9443b7ed2?auto=format&fit=crop&q=80&w=800" alt="Show" class="group-hover:scale-105 transition duration-500 h-96 w-full object-cover">
-                </div>
-                <h4 class="text-xl font-bold">Neon Dreams</h4>
-                <p class="text-zinc-500 mb-2">Contemporary • Main Stage</p>
-                <button class="text-sm font-bold text-red-500 group-hover:underline">GET TICKETS →</button>
-            </div>
-        </div>
-    </section>
+                // Filter only for directories (folders)
+                const directories = items.filter(item => item.type === 'dir' && !item.name.startsWith('.'));
 
-    <footer class="bg-zinc-900 py-12 px-6">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 border-b border-zinc-800 pb-12">
-            <div class="col-span-1 md:col-span-2">
-                <h2 class="text-2xl font-bold text-red-600 mb-4">GRAND CURTAIN</h2>
-                <p class="text-zinc-400 max-w-sm">Dedicated to bringing world-class performances and innovative storytelling to our community since 1984.</p>
-            </div>
-            <div>
-                <h5 class="font-bold mb-4 uppercase text-xs tracking-widest">Visit Us</h5>
-                <p class="text-zinc-400 text-sm">123 Spotlight Ave.<br>Arts District, NY 10012</p>
-            </div>
-            <div>
-                <h5 class="font-bold mb-4 uppercase text-xs tracking-widest">Connect</h5>
-                <div class="flex space-x-4 text-zinc-400">
-                    <a href="#" class="hover:text-white"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="hover:text-white"><i class="fab fa-facebook"></i></a>
-                    <a href="#" class="hover:text-white"><i class="fab fa-twitter"></i></a>
-                </div>
-            </div>
-        </div>
-        <p class="text-center text-zinc-600 text-xs mt-8">© 2026 Grand Curtain Theatre Company. All rights reserved.</p>
-    </footer>
+                if (directories.length === 0) {
+                    menuContainer.innerHTML = '<li class="px-4 py-2 text-zinc-500">No sub-pages found</li>';
+                    return;
+                }
 
+                // Clear "Loading" placeholder
+                menuContainer.innerHTML = '';
+
+                directories.forEach(dir => {
+                    const pageUrl = `/${GITHUB_REPO}/${dir.name}/`;
+
+                    // 1. Add to Navigation Dropdown
+                    const li = document.createElement('li');
+                    li.innerHTML = `<a href="${pageUrl}" class="block px-4 py-2 hover:bg-red-600 hover:text-white transition capitalize">${dir.name.replace(/-/g, ' ')}</a>`;
+                    menuContainer.appendChild(li);
+
+                    // 2. Add to Main Grid Card
+                    const card = document.createElement('div');
+                    card.className = "bg-zinc-900 p-6 rounded-lg border border-zinc-800 hover:border-red-600 transition group cursor-pointer";
+                    card.onclick = () => window.location.href = pageUrl;
+                    card.innerHTML = `
+                        <i class="fas fa-folder text-red-600 mb-4 text-2xl group-hover:scale-110 transition"></i>
+                        <h4 class="text-xl font-bold capitalize mb-2">${dir.name.replace(/-/g, ' ')}</h4>
+                        <p class="text-zinc-500 text-sm">Explore the contents of the ${dir.name} production folder.</p>
+                    `;
+                    gridContainer.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error("Error fetching directories:", error);
+                menuContainer.innerHTML = '<li class="px-4 py-2 text-red-500">API Limit Reached</li>';
+            }
+        }
+
+        fetchDirectories();
+    </script>
 </body>
 </html>
