@@ -1,26 +1,118 @@
-# Basic Pages CMS Configuration Template
-media:
-  input: "content/assets"
-  output: "/assets"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theatre CMS Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-zinc-950 text-zinc-100 font-sans">
 
-content:
-  # Collection for Blog Posts
-  - name: blog
-    label: "Blog"
-    type: collection
-    path: "content/blog"
-    filename: "{slug}.md"
-    fields:
-      - { name: title, label: "Title", type: string, required: true }
-      - { name: body, label: "Content", type: rich-text }
+    <nav class="border-b border-zinc-800 bg-black/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-8">
+                <h1 class="text-xl font-black tracking-tighter text-red-600">STAGE<span class="text-white">CMS</span></h1>
+                
+                <div class="hidden md:flex space-x-6 items-center uppercase text-xs font-bold tracking-widest">
+                    <a href="index.html" class="hover:text-red-500 transition">Home</a>
+                    
+                    <div class="relative group">
+                        <button class="flex items-center hover:text-red-500 transition outline-none">
+                            News & Blog <i class="fas fa-chevron-down ml-2 opacity-50"></i>
+                        </button>
+                        <ul id="nav-blog" class="absolute hidden group-hover:block bg-zinc-900 border border-zinc-800 w-48 py-2 mt-0 shadow-2xl">
+                            <li class="px-4 py-2 text-zinc-600 italic">Scanning...</li>
+                        </ul>
+                    </div>
 
-  # Collection for Documentation
-  - name: docs
-    label: "Docs"
-    type: collection
-    path: "content/docs"
-    filename: "{slug}.md"
-    fields:
-      - { name: title, label: "Title", type: string, required: true }
-      - { name: body, label: "Content", type: rich-text }
-      
+                    <div class="relative group">
+                        <button class="flex items-center hover:text-red-500 transition outline-none">
+                            Production Docs <i class="fas fa-chevron-down ml-2 opacity-50"></i>
+                        </button>
+                        <ul id="nav-docs" class="absolute hidden group-hover:block bg-zinc-900 border border-zinc-800 w-48 py-2 mt-0 shadow-2xl">
+                            <li class="px-4 py-2 text-zinc-600 italic">Scanning...</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <button class="bg-white text-black text-xs font-bold px-4 py-2 rounded hover:bg-red-600 hover:text-white transition">ADMIN PANEL</button>
+        </div>
+    </nav>
+
+    <header class="py-20 px-6 border-b border-zinc-900 bg-gradient-to-b from-zinc-900 to-zinc-950">
+        <div class="max-w-7xl mx-auto text-center">
+            <h2 class="text-4xl md:text-6xl font-serif mb-4">Live Performance Index</h2>
+            <p class="text-zinc-500 max-w-xl mx-auto italic">Automatically syncing content from your CMS collections.</p>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto py-16 px-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            
+            <section>
+                <h3 class="flex items-center text-red-500 font-bold mb-6 tracking-widest uppercase">
+                    <span class="w-8 h-px bg-red-500 mr-3"></span> Latest News
+                </h3>
+                <div id="list-blog" class="space-y-4 text-zinc-400 font-medium italic">Searching blog entries...</div>
+            </section>
+
+            <section>
+                <h3 class="flex items-center text-blue-500 font-bold mb-6 tracking-widest uppercase">
+                    <span class="w-8 h-px bg-blue-500 mr-3"></span> Resource Library
+                </h3>
+                <div id="list-docs" class="space-y-4 text-zinc-400 font-medium italic">Searching documentation...</div>
+            </section>
+
+        </div>
+    </main>
+
+    <script>
+        // Set these to your GitHub repo details
+        const USER = 'ivikee7';
+        const REPO = 'ivikee7.github.io';
+
+        async function loadCollection(path, navId, listId, icon) {
+            const nav = document.getElementById(navId);
+            const list = document.getElementById(listId);
+            
+            try {
+                const res = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${path}`);
+                const files = await res.json();
+                
+                // Filter for Markdown files only
+                const mdFiles = files.filter(f => f.name.endsWith('.md'));
+
+                if(mdFiles.length > 0) {
+                    nav.innerHTML = '';
+                    list.innerHTML = '';
+
+                    mdFiles.forEach(file => {
+                        const cleanName = file.name.replace('.md', '').replace(/-/g, ' ');
+                        const url = `/${REPO}/${path}/${file.name.replace('.md', '')}`;
+
+                        // Add to Dropdown
+                        nav.innerHTML += `<li><a href="${url}" class="block px-4 py-2 hover:bg-zinc-800 transition capitalize">${cleanName}</a></li>`;
+                        
+                        // Add to Main List Blocks
+                        list.innerHTML += `
+                            <a href="${url}" class="group flex items-center justify-between p-4 bg-zinc-900 border border-zinc-800 hover:border-zinc-600 transition">
+                                <span class="capitalize group-hover:text-white transition">${cleanName}</span>
+                                <i class="${icon} text-zinc-700 group-hover:text-red-500 transition"></i>
+                            </a>`;
+                    });
+                } else {
+                    nav.innerHTML = '<li class="px-4 py-2 text-zinc-600">No entries</li>';
+                    list.innerHTML = '<p class="text-zinc-700">No items found in this collection.</p>';
+                }
+            } catch (e) {
+                console.error("Collection Load Error:", e);
+            }
+        }
+
+        // Initialize based on your CMS config
+        loadCollection('content/blog', 'nav-blog', 'list-blog', 'fas fa-newspaper');
+        loadCollection('content/docs', 'nav-docs', 'list-docs', 'fas fa-file-invoice');
+    </script>
+</body>
+</html>
