@@ -1,119 +1,158 @@
-# Pages CMS
+# AstroPaper 📄
 
-[Pages CMS](https://pagescms.org) is an Open Source Content Management System for GitHub. It is particularly well suited for static site generators (e.g. Jekyll, Next.js, VuePress, Hugo).
+![AstroPaper](public/astropaper-og.jpg)
+![Typescript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![GitHub](https://img.shields.io/github/license/satnaing/astro-paper?color=%232F3741&style=for-the-badge)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white&style=for-the-badge)](https://conventionalcommits.org)
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=for-the-badge)](http://commitizen.github.io/cz-cli/)
 
-It offers a user-friendly interface to edit the content of your website or app directly on GitHub.
+AstroPaper is a minimal, responsive, accessible and SEO-friendly Astro blog theme. This theme is designed and crafted based on [my personal blog](https://satnaing.dev/blog).
 
-<a href="https://youtu.be/MLpt12a8JRM" target="_blank">
-<picture>
-<source media="(prefers-color-scheme: dark)" srcset="https://pagescms.org/media/screenshots/nextjs-edit-with-bg-dark@2x.png">
-<source media="(prefers-color-scheme: light)" srcset="https://pagescms.org/media/screenshots/nextjs-edit-with-bg-light@2x.png">
-<img src="https://pagescms.org/media/screenshots/nextjs-edit-with-bg-light@2x.png">
-</picture>
-</a>
+This theme follows best practices and provides accessibility out of the box. Light and dark mode are supported by default. Moreover, additional color schemes can also be configured.
 
-*[Watch the demo ▶](https://youtu.be/MLpt12a8JRM)*
+This theme is self-documented \_ which means articles/posts in this theme can also be considered as documentations. Read [the blog posts](https://astro-paper.pages.dev/posts/) or check [the README Documentation Section](#-documentation) for more info.
 
-## Documentation
+## 🔥 Features
 
-Go to [pagescms.org/docs](https://pagescms.org/docs).
+- [x] type-safe markdown
+- [x] super fast performance
+- [x] accessible (Keyboard/VoiceOver)
+- [x] responsive (mobile ~ desktops)
+- [x] SEO-friendly
+- [x] light & dark mode
+- [x] fuzzy search
+- [x] draft posts & pagination
+- [x] sitemap & rss feed
+- [x] followed best practices
+- [x] highly customizable
+- [x] dynamic OG image generation for blog posts [#15](https://github.com/satnaing/astro-paper/pull/15) ([Blog Post](https://astro-paper.pages.dev/posts/dynamic-og-image-generation-in-astropaper-blog-posts/))
 
-## Built with
+_Note: I've tested screen-reader accessibility of AstroPaper using **VoiceOver** on Mac and **TalkBack** on Android. I couldn't test all other screen-readers out there. However, accessibility enhancements in AstroPaper should be working fine on others as well._
 
-- [Next.js](https://nextjs.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [shadcn/ui](https://ui.shadcn.com/)
-- [drizzle](https://orm.drizzle.team/)
-- [Vercel](https://vercel.com/)
-- [Turso](https://turso.tech/)
-- [Resend](https://resend.com/)
+## ✅ Lighthouse Score
 
-## Use online
+<p align="center">
+  <a href="https://pagespeed.web.dev/report?url=https%3A%2F%2Fastro-paper.pages.dev%2F&form_factor=desktop">
+    <img width="710" alt="AstroPaper Lighthouse Score" src="AstroPaper-lighthouse-score.svg">
+  <a>
+</p>
 
-The easiest way to get started is to use [the online version of Pages CMS](https://app.pagescms.org). You'll be able to log in with your GitHub account and get the latest version of Pages CMS.
+## 🚀 Project Structure
 
-This online version is identical to what's in this repo, but you can also install your own version locally or deploy it (for free) on Vercel following the steps below.
+Inside of AstroPaper, you'll see the following folders and files:
 
-## Install and Deploy
+```bash
+/
+├── public/
+│   ├── assets/
+│   │   └── logo.svg
+│   │   └── logo.png
+│   └── favicon.svg
+│   └── astropaper-og.jpg
+│   └── robots.txt
+│   └── toggle-theme.js
+├── src/
+│   ├── assets/
+│   │   └── socialIcons.ts
+│   ├── components/
+│   ├── content/
+│   │   |  blog/
+│   │   |    └── some-blog-posts.md
+│   │   └── config.ts
+│   ├── layouts/
+│   └── pages/
+│   └── styles/
+│   └── utils/
+│   └── config.ts
+│   └── types.ts
+└── package.json
+```
 
-### Create a GitHub App
+Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
 
-Whether you're installing Pages CMS locally or deploying it online, you will need a GitHub App.
+Any static assets, like images, can be placed in the `public/` directory.
 
-You can either create it under your personal account (https://github.com/settings/apps) or under one of your organizations (https://github.com/organizations/<org-name>/settings/apps).
+All blog posts are stored in `src/content/blog` directory.
 
-You will need to fill in the following information:
+## 📖 Documentation
 
-- **GitHub App name**: use "Pages CMS" or whatever you think is appropriate (e.g. "Pages CMS (dev)").
-- **Homepage URL**: whatever you want, https://pagescms.org will do.
-- **Identifying and authorizing users**:
-    - Callback URL: the URL for `/api/auth/github`:
-        - `http://localhost:3000/api/auth/github` for development,
-        - something like `https://my-vercel-url.vercel.app/api/auth/github` (or whatever custom domain you're using) if you're deploying on Vercel.
-    - Expire user authorization tokens: no.
-    - Request user authorization (OAuth) during installation: yes.
-    - Enable Device Flow: no.
-- **Post installation**:
-    - Setup URL (optional): leave empty.
-    - Redirect on update: no.
-- **Webhook**:
-    - Active: yes.
-    - Webhook URL: the (public) URL for `/api/webhook/github`:
-        - for development, you'll need to use something like [ngrok](https://ngrok.com/). You'll end up with something like `https://your-unique-subdomain.ngrok-free.app/api/webhook/github`.
-        - something like `https://my-vercel-url.vercel.app/api/webhook/github` (or whatever custom domain you're using) if you're deploying on Vercel.
-    - Secret: generate a random string (for example with `openssl rand -base64 32` on MacOS/Linux)
-- **Permissions**:
-    - Repository permissions:
-        - Administration: Read & Write
-        - Contents: Read & Write
-        - Metadata: Read only
-    - Organization permissions: nothing.
-    - Account permissions: nothing.
-- **Subscribe to events**:
-    - Installation target
-    - Repository (you'll probably need to add this after creating the GitHub App)
-- **Where can this GitHub App be installed?**: you'll want to select "Any account" unless you intend to only use Pages CMS on the account this GitHub App is created under.
+Documentation can be read in two formats\_ _markdown_ & _blog post_.
 
-### Environment variables
+- Configuration - [markdown](src/content/blog/how-to-configure-astropaper-theme.md) | [blog post](https://astro-paper.pages.dev/posts/how-to-configure-astropaper-theme/)
+- Add Posts - [markdown](src/content/blog/adding-new-post.md) | [blog post](https://astro-paper.pages.dev/posts/adding-new-posts-in-astropaper-theme/)
+- Customize Color Schemes - [markdown](src/content/blog/customizing-astropaper-theme-color-schemes.md) | [blog post](https://astro-paper.pages.dev/posts/customizing-astropaper-theme-color-schemes/)
+- Predefined Color Schemes - [markdown](src/content/blog/predefined-color-schemes.md) | [blog post](https://astro-paper.pages.dev/posts/predefined-color-schemes/)
 
-Variable | Comments
---- | ---
-`CRYPTO_KEY` | Used to encrypt/decrypt GitHub tokens in the database. On MacOS/Linux*, you can use `openssl rand -base64 32`.
-`GITHUB_APP_ID` | GitHub App ID from your GitHub App details page.
-`GITHUB_APP_NAME` | Machine name for your GitHub App (e.g. `pages-cms`), should be the slug the URL of your GitHub App details page.
-`GITHUB_APP_PRIVATE_KEY` | PEM file you can download upong creation of the GitHub App.
-`GITHUB_APP_WEBHOOK_SECRET` | The secret you picked for your webhook. This is used to ensure the request is coming from GitHub.
-`GITHUB_APP_CLIENT_ID` | GitHub App Client ID from your GitHub App details page.
-`GITHUB_APP_CLIENT_SECRET` | GitHub App Client Secret you generate on theGitHub App details page.
-`RESEND_API_KEY` | You'll get that when you create a (free) [Resend](https://resend.com) account to handle emails.
-`SQLITE_URL` | `file:./local.db` for development, `libsql://pages-cms-username.turso.io` for example if you use [Turso](https://turso.tech) (you should, Turso is great).
-`SQLITE_AUTH_TOKEN` | Leave blank for development, otherwise use the token provided by [Turso](https://turso.tech) (if that's what you use).
-`BASE_URL` | **OPTIONAL**. If you're deploying to Vercel or working locally, you won't need that. If you're deploying elsewhere, you'll need to specify the base URL for the app (e.g. `https://mycustomdomain.com`).
+> For AstroPaper v1, check out [this branch](https://github.com/satnaing/astro-paper/tree/astro-paper-v1) and this [live URL](https://astro-paper-v1.astro-paper.pages.dev/)
 
-### Local development
+## 💻 Tech Stack
 
-We assume you've already created the GitHub App and have a running tunnel for the GitHub App Webhook (using [ngrok](https://ngrok.com/) for example):
+**Main Framework** - [Astro](https://astro.build/)  
+**Type Checking** - [TypeScript](https://www.typescriptlang.org/)  
+**Component Framework** - [ReactJS](https://reactjs.org/)  
+**Styling** - [TailwindCSS](https://tailwindcss.com/)  
+**UI/UX** - [Figma](https://figma.com)  
+**Fuzzy Search** - [FuseJS](https://fusejs.io/)  
+**Icons** - [Boxicons](https://boxicons.com/) | [Tablers](https://tabler-icons.io/)  
+**Code Formatting** - [Prettier](https://prettier.io/)  
+**Deployment** - [Cloudflare Pages](https://pages.cloudflare.com/)  
+**Illustration in About Page** - [https://freesvgillustration.com](https://freesvgillustration.com/)  
+**Linting** - [ESLint](https://eslint.org)
 
-1. **Install the dependencies**: `npm install`
-2. **Update your environment variables**: copy `.env.example` to `.env` and fill in the values according to your setting (see section above).
-3. **Create the database**: `npm run db:migrate`
-4. **Run it**: `npm run dev`
+## 👨🏻‍💻 Running Locally
 
-### Deploy on Vercel
+The easiest way to run this project locally is to run the following command in your desired directory.
 
-1. **Create a SQLite database**: I recommend using [Turso](https://turso.tech), because it's free (and pretty awesome)
-2. **Deploy to Vercel**: at this stage you have 2 choices:
-    1. **Create a fork**: fork the `pages-cms/pages-cms` repo in your account and deploy that fork. This will allow you to get updates. **Make sure you define all of the environment variables listed above**.
-    2. **Use the deploy button**:
-    
-        [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fpages-cms%2Fpages-cms%2Ftree%2Fmain&project-name=pages-cms&repository-name=pages-cms&redirect-url=https%3A%2F%2Fpagescms.org&env=CRYPTO_KEY,GITHUB_APP_ID,GITHUB_APP_NAME,GITHUB_APP_PRIVATE_KEY,GITHUB_APP_WEBHOOK_SECRET,GITHUB_APP_CLIENT_ID,GITHUB_APP_CLIENT_SECRET,RESEND_API_KEY,SQLITE_URL,SQLITE_AUTH_TOKEN)
+```bash
+# npm 6.x
+npm create astro@latest --template satnaing/astro-paper
 
-3. **Update your GitHub OAuth app**: you'll probably need to go back to your GitHub App settings to update some of the settings once you have the Vercel URL (e.g. "Callback URL" and "Webhook URL").
+# npm 7+, extra double-dash is needed:
+npm create astro@latest -- --template satnaing/astro-paper
 
-### Self-host
+# yarn
+yarn create astro --template satnaing/astro-paper
+```
 
-There are [plenty of other options](https://nextjs.org/docs/app/building-your-application/deploying#self-hosting): Fly.io, Digital Ocean, Render, SST, etc.
+## Google Site Verification (optional)
 
-## License
+You can easily add your [Google Site Verification HTML tag](https://support.google.com/webmasters/answer/9008080#meta_tag_verification&zippy=%2Chtml-tag) in AstroPaper using environment variable. This step is optional. If you don't add the following env variable, the google-site-verification tag won't appear in the html `<head>` section.
 
-Everything in this repo is released under the [MIT License](LICENSE).
+```bash
+# in your environment variable file (.env)
+PUBLIC_GOOGLE_SITE_VERIFICATION=your-google-site-verification-value
+```
+
+## 🧞 Commands
+
+All commands are run from the root of the project, from a terminal:
+
+> **_Note!_** For `Docker` commands we must have it [installed](https://docs.docker.com/engine/install/) in your machine.
+
+| Command                              | Action                                                                                                                           |
+| :----------------------------------- | :------------------------------------------------------------------------------------------------------------------------------- |
+| `npm install`                        | Installs dependencies                                                                                                            |
+| `npm run dev`                        | Starts local dev server at `localhost:4321`                                                                                      |
+| `npm run build`                      | Build your production site to `./dist/`                                                                                          |
+| `npm run preview`                    | Preview your build locally, before deploying                                                                                     |
+| `npm run format:check`               | Check code format with Prettier                                                                                                  |
+| `npm run format`                     | Format codes with Prettier                                                                                                       |
+| `npm run sync`                       | Generates TypeScript types for all Astro modules. [Learn more](https://docs.astro.build/en/reference/cli-reference/#astro-sync). |
+| `npm run cz`                         | Commit code changes with commitizen                                                                                              |
+| `npm run lint`                       | Lint with ESLint                                                                                                                 |
+| `docker compose up -d`               | Run AstroPaper on docker, You can access with the same hostname and port informed on `dev` command.                              |
+| `docker compose run app npm install` | You can run any command above into the docker container.                                                                         |
+
+> **_Warning!_** Windows PowerShell users may need to install the [concurrently package](https://www.npmjs.com/package/concurrently) if they want to [run diagnostics](https://docs.astro.build/en/reference/cli-reference/#astro-check) during development (`astro check --watch & astro dev`). For more info, see [this issue](https://github.com/satnaing/astro-paper/issues/113).
+
+## ✨ Feedback & Suggestions
+
+If you have any suggestions/feedback, you can contact me via [my email](mailto:contact@satnaing.dev). Alternatively, feel free to open an issue if you find bugs or want to request new features.
+
+## 📜 License
+
+Licensed under the MIT License, Copyright © 2023
+
+---
+
+Made with 🤍 by [Sat Naing](https://satnaing.dev) 👨🏻‍💻 and [contributors](https://github.com/satnaing/astro-paper/graphs/contributors).
