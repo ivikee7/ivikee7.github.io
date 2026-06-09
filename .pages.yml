@@ -36,26 +36,57 @@ content:
   - name: posts
     label: Posts
     type: collection
-    path: src/content/blog
+    path: src/content/posts
+    view:
+      fields: [ title, draft, date ]
+    filename: "{year}-{month}-{day}-{fields.slug}.md"
+    fields:
+      - { name: title, label: Title, type: string, required: true }
+      - { name : section, label: Section, type: string, required: true }
+      - { name: description, label: Description, type: string }
+      - { name: "date", label: "Date", type: "date" }
+      - { name: "previewImage", label: "Preview Image", type: "image", required: false }
+      - { name: body, label: Body, type: rich-text,
+          options: { 
+            input: src/assets/posts,
+            output: /assets/posts
+          } 
+        }
+      - { name: seo, component: seo, label: SEO Meta Data }
+  - name: pages
+    label: Pages
+    type: collection
+    path: src/content/pages
     view:
       fields: [ title, draft, date ]
     fields:
-      - { name: author, label: Author, type: string }
-      - { name: pubDatetime, label: Date, type: date }
-      - { name: modDatetime, label: Date, type: date }
       - { name: title, label: Title, type: string, required: true }
-      - { name: ogImage, label: Title, type: string }
-      - { name: slug, label: Slug, type: string }
-      - { name: featured, label: Featured, type: boolean }
-      - { name: draft, label: Draft, type: boolean }
-      - { name: tags, label: Tags, type: string, list: true }
+      - { name : section, label: Section, type: string, required: true }
       - { name: description, label: Description, type: string }
-      - { name: body, label: Body, type: rich-text }
-  - name: about
-    label: About page
-    type: file
-    path: src/pages/about.md
+      - { name: "date", label: "Date", type: "date" }
+      - { name: "previewImage", label: "Preview Image", type: "image", required: false }
+      - { name: body, label: Body, type: rich-text, 
+          options: { 
+            input: src/assets/pages,
+            output: /assets/pages
+          } 
+        }
+      - { name: seo, component: seo, label: SEO Meta Data }
+  - name: achievers-gallery
+    label: Achievers Gallery
+    type: collection
+    path: src/content/posts/achievers-gallery
+    view:
+      fields: [ title, draft, date ]
     fields:
-      - { name: layout, type: string, hidden: true, default: "../layouts/AboutLayout.astro" }
-      - { name: title, label: Title, type: string }
-      - { name: body, label: Body, type: rich-text, options: { input: public/assets, output: /assets } }
+      - { name: title, label: Title, type: string, required: true }
+      - { name: description, label: Description, type: string }
+      - { name: "date", label: "Date", type: "date" }
+      - { name: "previewImage", label: "Preview Image", type: "image", required: false }
+      - { name: body, label: Body, type: rich-text, 
+          options: { 
+            format: html,
+            input: src/assets,
+            output: /assets
+          } 
+        }
