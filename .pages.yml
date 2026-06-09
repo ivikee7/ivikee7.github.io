@@ -72,21 +72,3 @@ content:
           } 
         }
       - { name: seo, component: seo, label: SEO Meta Data }
-  - name: achievers-gallery
-    label: Achievers Gallery
-    type: collection
-    path: src/content/posts/achievers-gallery
-    view:
-      fields: [ title, draft, date ]
-    fields:
-      - { name: title, label: Title, type: string, required: true }
-      - { name: description, label: Description, type: string }
-      - { name: "date", label: "Date", type: "date" }
-      - { name: "previewImage", label: "Preview Image", type: "image", required: false }
-      - { name: body, label: Body, type: rich-text, 
-          options: { 
-            format: html,
-            input: src/assets,
-            output: /assets
-          } 
-        }
