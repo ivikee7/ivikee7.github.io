@@ -14,15 +14,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout your repository using git
+      - name: Checkout your repository
         uses: actions/checkout@v4
 
-      - name: Install, build, and upload your site
-        uses: withastro/action@v3
-        # Remove the 'with:' line completely if you aren't specifying a path.
-        # If your Astro project is inside a subfolder named 'astro', uncomment the next two lines:
-        # with:
-        #   path: ./astro
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22' # This satisfies your package.json engine requirement!
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build site
+        run: npm run build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
 
   deploy:
     needs: build
