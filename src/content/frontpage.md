@@ -1,7 +1,7 @@
 ---
-title: 'Alex Rivers'
+title: 'Vikee Kumar'
 subtitle: 'Creative Developer'
 heroTitle: 'Crafting digital experiences'
-heroDescription: 'Powered by Astro.'
+heroDescription: '.'
 ---
 
