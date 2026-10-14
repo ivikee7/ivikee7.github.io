@@ -1,0 +1,28 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+const allDocs = await getCollection('docs');
+---
+<Layout title="Documentation | Ivikee7">
+  <main class="max-w-7xl mx-auto px-6 py-24">
+    <div class="mb-16 text-center max-w-3xl mx-auto">
+      <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-indigo-300 to-purple-400 mb-6">Documentation Guides</h1>
+      <p class="text-slate-400 text-lg md:text-xl">Browse all technical guides, architectural decisions, and project specifications.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {allDocs.map((doc) => (
+        <a href={`/docs/${doc.id}`} class="group relative flex flex-col justify-between rounded-3xl bg-slate-900/40 backdrop-blur-sm border border-white/10 p-8 hover:bg-slate-800/60 hover:border-indigo-500/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_40px_rgba(99,102,241,0.1)]">
+          <div>
+            <h2 class="text-2xl font-bold text-slate-200 group-hover:text-white transition-colors mb-3">{doc.data.title}</h2>
+            <p class="text-slate-400 text-sm leading-relaxed">{doc.data.description}</p>
+          </div>
+          <div class="mt-8 flex items-center text-indigo-400 text-sm font-semibold opacity-0 group-hover:opacity-100 group-hover:-translate-y-1 transition-all">
+            Read Guide &rarr;
+          </div>
+        </a>
+      ))}
+    </div>
+  </main>
+</Layout>

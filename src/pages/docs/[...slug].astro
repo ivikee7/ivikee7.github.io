@@ -1,0 +1,31 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const docs = await getCollection('docs');
+  return docs.map((doc) => ({
+    params: { slug: doc.id },
+    props: { doc },
+  }));
+}
+
+const { doc } = Astro.props;
+const { Content } = await render(doc);
+---
+<Layout title={doc.data.title} description={doc.data.description}>
+  <main class="max-w-4xl mx-auto px-6 py-20">
+    <a href="/docs" class="inline-flex items-center gap-2 text-indigo-400 text-sm font-semibold hover:text-indigo-300 transition-colors mb-12 bg-indigo-500/10 px-4 py-2 rounded-full">
+      &larr; Back to Documentation
+    </a>
+
+    <header class="mb-16 border-b border-white/10 pb-12">
+      <h1 class="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-6">{doc.data.title}</h1>
+      {doc.data.description && <p class="text-xl md:text-2xl text-slate-400 leading-relaxed font-light">{doc.data.description}</p>}
+    </header>
+
+    <article class="prose prose-invert prose-indigo prose-lg max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-indigo-400 hover:prose-a:text-indigo-300 prose-img:rounded-2xl prose-pre:border prose-pre:border-white/10 prose-pre:bg-slate-900/80">
+      <Content />
+    </article>
+  </main>
+</Layout>

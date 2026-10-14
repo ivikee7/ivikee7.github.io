@@ -1,0 +1,31 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const pages = await getCollection('pages');
+  return pages.map((page) => ({
+    params: { slug: page.id },
+    props: { page },
+  }));
+}
+
+const { page } = Astro.props;
+const { Content } = await render(page);
+---
+<Layout title={`${page.data.title} | Ivikee7`}>
+  <main class="max-w-4xl mx-auto px-6 py-20">
+    <a href="/pages" class="inline-flex items-center gap-2 text-purple-400 text-sm font-semibold hover:text-purple-300 transition-colors mb-12 bg-purple-500/10 px-4 py-2 rounded-full">
+      &larr; Back to Pages
+    </a>
+
+    <header class="mb-16 border-b border-white/10 pb-12">
+      <h1 class="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-6">{page.data.title}</h1>
+      {page.data.description && <p class="text-xl md:text-2xl text-slate-400 leading-relaxed font-light">{page.data.description}</p>}
+    </header>
+
+    <article class="prose prose-invert prose-purple prose-lg max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-purple-400 hover:prose-a:text-purple-300 prose-img:rounded-2xl prose-pre:border prose-pre:border-white/10 prose-pre:bg-slate-900/80">
+      <Content />
+    </article>
+  </main>
+</Layout>
