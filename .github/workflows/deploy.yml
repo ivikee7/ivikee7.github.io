@@ -1,13 +1,10 @@
 name: Deploy to GitHub Pages
 
 on:
-  # Trigger the workflow every time you push to the main branch
   push:
     branches: [ main, master ]
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Allow this job to clone the repo and create a page deployment
 permissions:
   contents: read
   pages: write
@@ -22,10 +19,10 @@ jobs:
 
       - name: Install, build, and upload your site
         uses: withastro/action@v3
-        with:
-          # IMPORTANT: If your package.json is inside a subfolder named "astro" 
-          # (e.g., ivikee7.github.io/astro), uncomment the line below and change the path:
-          # path: ./astro 
+        # Remove the 'with:' line completely if you aren't specifying a path.
+        # If your Astro project is inside a subfolder named 'astro', uncomment the next two lines:
+        # with:
+        #   path: ./astro
 
   deploy:
     needs: build
