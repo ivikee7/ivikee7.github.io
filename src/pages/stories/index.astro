@@ -184,6 +184,7 @@ Your full story narrative starts here...</pre>
   let allStories: StoryMeta[] = [];
   let currentCategory = 'all';
   let searchQuery = '';
+  let activeBranch = 'main';
 
   const loadingEl = document.getElementById('stories-loading');
   const errorEl = document.getElementById('stories-error');
@@ -333,19 +334,14 @@ Your full story narrative starts here...</pre>
       let tree: any[] = [];
       let activeBranch = BRANCH;
 
-      // 1. Check repository info to determine default branch and empty status
+      // 1. Check repository info to determine default branch
       try {
         const repoRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}`);
         if (repoRes.ok) {
           const repoData = await repoRes.json();
           activeBranch = repoData.default_branch || 'main';
-          if (repoData.size === 0) {
-            // Brand new repo with 0 commits
-            showEmpty();
-            return;
-          }
         } else if (repoRes.status === 404) {
-          throw new Error(`Repository https://github.com/${GITHUB_REPO} was not found. Please ensure the repository is Public and the name matches.`);
+          throw new Error(`Repository https://github.com/${GITHUB_REPO} was not found. Please ensure the repository is Public.`);
         } else if (repoRes.status === 403) {
           throw new Error('GitHub API hourly rate limit reached. Please wait a few minutes or retry.');
         }
@@ -360,8 +356,6 @@ Your full story narrative starts here...</pre>
       const res = await fetch(treeUrl);
 
       if (!res.ok) {
-        // Status 409: "Git Repository is empty"
-        // Status 404: Branch or tree not created yet
         if (res.status === 409 || res.status === 404) {
           showEmpty();
           return;
@@ -395,97 +389,88 @@ Your full story narrative starts here...</pre>
         return;
       }
 
-      // Fetch headers/frontmatter for each story safely in parallel
-      const parsedStories = await Promise.all(
-        storyFiles.map(async (file: any): Promise<StoryMeta | null> => {
-          try {
-            const raw = await fetchStoryContent(file.path, activeBranch);
-            const { metadata, content } = parseFrontmatter(raw);
+      // Build instant stories list directly from tree structure
+      allStories = storyFiles.map((file: any): StoryMeta => {
+        const pathSegments = file.path.split('/');
+        let rawCategory = 'general';
+        let storyFolder = '';
+        let fileName = pathSegments[pathSegments.length - 1];
 
-            // Path hierarchy handling (e.g. folktales_and_fables/bandar-aur-magarmach/story_hi.md)
-            const pathSegments = file.path.split('/');
-            let rawCategory = 'general';
-            let storyFolder = '';
-            let fileName = pathSegments[pathSegments.length - 1];
+        if (pathSegments.length >= 3) {
+          rawCategory = pathSegments[0];
+          storyFolder = pathSegments[1];
+        } else if (pathSegments.length === 2) {
+          rawCategory = pathSegments[0];
+          storyFolder = fileName.replace(/\.[^/.]+$/, '');
+        } else {
+          storyFolder = fileName.replace(/\.[^/.]+$/, '');
+        }
 
-            if (pathSegments.length >= 3) {
-              rawCategory = pathSegments[0];
-              storyFolder = pathSegments[1];
-            } else if (pathSegments.length === 2) {
-              rawCategory = pathSegments[0];
-              storyFolder = fileName.replace(/\.[^/.]+$/, '');
+        const categoryKey = rawCategory.toLowerCase();
+        const categoryDisplay = formatCategoryName(categoryKey);
+
+        let language = '';
+        const lowerPath = file.path.toLowerCase();
+        if (lowerPath.includes('_hi.') || lowerPath.includes('-hi.') || lowerPath.includes('hindi')) {
+          language = 'Hindi';
+        } else if (lowerPath.includes('_en.') || lowerPath.includes('-en.') || lowerPath.includes('english')) {
+          language = 'English';
+        }
+
+        let title = formatTitleFromSlug(storyFolder);
+        if (language && !title.toLowerCase().includes(language.toLowerCase())) {
+          title += ` (${language})`;
+        }
+
+        const tags = [categoryDisplay.toLowerCase()];
+        if (language) tags.push(language.toLowerCase());
+
+        return {
+          path: file.path,
+          slug: encodeURIComponent(file.path),
+          title: title || fileName,
+          category: categoryKey,
+          categoryDisplay,
+          language,
+          summary: `Story script from ${categoryDisplay} • ${storyFolder}`,
+          tags,
+          readTime: 'Read Story'
+        };
+      });
+
+      renderCategories();
+      renderGrid();
+      checkDeepLink();
+
+      // Lazy-load titles & summaries in the background
+      storyFiles.forEach(async (file: any) => {
+        try {
+          const raw = await fetchStoryContent(file.path, activeBranch);
+          const { metadata, content } = parseFrontmatter(raw);
+          const story = allStories.find(s => s.path === file.path);
+          if (story) {
+            story.content = content;
+            story.prompts = metadata.prompts;
+            if (metadata.title) {
+              story.title = metadata.title;
             } else {
-              storyFolder = fileName.replace(/\.[^/.]+$/, '');
-            }
-
-            const categoryKey = (metadata.category || rawCategory).toLowerCase();
-            const categoryDisplay = formatCategoryName(categoryKey);
-
-            // Language detection
-            let language = metadata.language || '';
-            const lowerPath = file.path.toLowerCase();
-            if (!language) {
-              if (lowerPath.includes('_hi.') || lowerPath.includes('-hi.') || lowerPath.includes('hindi')) {
-                language = 'Hindi';
-              } else if (lowerPath.includes('_en.') || lowerPath.includes('-en.') || lowerPath.includes('english')) {
-                language = 'English';
-              }
-            }
-
-            // Title resolution
-            let title = metadata.title;
-            if (!title) {
               const headingMatch = content.match(/^#\s+(.+)$/m);
               if (headingMatch && headingMatch[1].trim()) {
-                title = headingMatch[1].trim();
-              } else if (storyFolder) {
-                title = formatTitleFromSlug(storyFolder);
-                if (language && !title.toLowerCase().includes(language.toLowerCase())) {
-                  title += ` (${language})`;
-                }
-              } else {
-                title = fileName.replace(/\.[^/.]+$/, '');
+                story.title = headingMatch[1].trim();
               }
             }
-
-            // Tags
-            let tags: string[] = [];
-            if (Array.isArray(metadata.tags)) {
-              tags = metadata.tags;
-            } else if (metadata.tags) {
-              tags = [String(metadata.tags)];
+            if (metadata.summary || metadata.description) {
+              story.summary = metadata.summary || metadata.description;
+            } else {
+              const cleanContent = content.slice(0, 160).replace(/[#*`_]/g, '').trim();
+              if (cleanContent) story.summary = cleanContent + '...';
             }
-            if (language && !tags.some(t => t.toLowerCase() === language.toLowerCase())) {
-              tags.push(language.toLowerCase());
-            }
-
-            return {
-              path: file.path,
-              slug: encodeURIComponent(file.path),
-              title: title || 'Untitled Story',
-              category: categoryKey,
-              categoryDisplay,
-              language,
-              summary: metadata.summary || metadata.description || content.slice(0, 160).replace(/[#*`_]/g, '').trim() + '...',
-              tags,
-              date: metadata.date || '',
-              prompts: metadata.prompts,
-              content,
-              readTime: calculateReadTime(content)
-            };
-          } catch (e) {
-            console.warn(`Could not load story file: ${file.path}`, e);
-            return null;
+            if (metadata.date) story.date = metadata.date;
+            story.readTime = calculateReadTime(content);
+            renderGrid();
           }
-        })
-      );
-
-      allStories = parsedStories.filter((s): s is StoryMeta => s !== null);
-
-      if (allStories.length === 0) {
-        showEmpty();
-        return;
-      }
+        } catch (_) {}
+      });
 
       renderCategories();
       renderGrid();
@@ -668,13 +653,42 @@ Your full story narrative starts here...</pre>
     }
 
     // Markdown content render
-    if (readerContent && story.content) {
-      readerContent.innerHTML = marked.parse(story.content);
+    if (readerContent) {
+      if (story.content) {
+        readerContent.innerHTML = marked.parse(story.content);
+      } else {
+        readerContent.innerHTML = '<div class="py-16 text-center text-slate-400"><div class="inline-block w-8 h-8 border-3 border-purple-500/30 border-t-purple-500 rounded-full animate-spin mb-3"></div><p>Loading full story text...</p></div>';
+        fetchStoryContent(story.path, activeBranch).then(raw => {
+          const { metadata, content } = parseFrontmatter(raw);
+          story.content = content;
+          story.prompts = metadata.prompts;
+          if (metadata.title) {
+            story.title = metadata.title;
+            if (readerTitle) readerTitle.textContent = metadata.title;
+          }
+          if (readerReadTime) readerReadTime.textContent = `• ${calculateReadTime(content)}`;
+          readerContent.innerHTML = marked.parse(content);
+
+          if (story.prompts && Object.keys(story.prompts).length > 0) {
+            readerPromptsBox?.classList.remove('hidden');
+            if (readerPromptsContent) {
+              readerPromptsContent.innerHTML = Object.entries(story.prompts).map(([k, v]) => `
+                <div>
+                  <span class="text-purple-400 font-bold">${k}:</span>
+                  <span class="text-slate-200">${v}</span>
+                </div>
+              `).join('');
+            }
+          }
+        }).catch(err => {
+          readerContent.innerHTML = `<p class="text-red-400 py-8 text-center">Could not load story: ${err.message}</p>`;
+        });
+      }
     }
 
     // View on GitHub link
     if (viewOnGithubLink) {
-      viewOnGithubLink.href = `https://github.com/${GITHUB_REPO}/blob/${BRANCH}/${story.path}`;
+      viewOnGithubLink.href = `https://github.com/${GITHUB_REPO}/blob/${activeBranch}/${story.path}`;
     }
 
     if (updateUrl) {

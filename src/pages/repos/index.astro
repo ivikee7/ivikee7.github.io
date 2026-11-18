@@ -64,14 +64,50 @@ import Layout from '../../layouts/Layout.astro';
             </div>
           </header>
 
-          <!-- README Loading Spinner -->
-          <div id="readme-loading" class="text-center py-16 hidden">
-            <div class="inline-block w-8 h-8 border-3 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin mb-3"></div>
-            <p class="text-slate-400 text-xs">Loading README.md...</p>
+          <!-- Navigation Tabs -->
+          <div class="flex items-center gap-3 border-b border-white/10 mb-8 pb-3">
+            <button id="tab-readme-btn" class="px-4 py-2 rounded-xl text-xs md:text-sm font-semibold bg-indigo-600 text-white transition-all shadow-md cursor-pointer">
+              📖 README.md
+            </button>
+            <button id="tab-files-btn" class="px-4 py-2 rounded-xl text-xs md:text-sm font-semibold bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700 transition-all cursor-pointer">
+              📑 Stories & Markdown Pages (<span id="repo-files-count">0</span>)
+            </button>
           </div>
 
-          <!-- README Content -->
-          <div id="detail-readme" class="prose prose-invert prose-indigo prose-lg max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-indigo-400 prose-img:rounded-2xl prose-pre:bg-slate-950 prose-pre:border prose-pre:border-white/10">
+          <!-- Section 1: README Content -->
+          <div id="section-readme">
+            <!-- README Loading Spinner -->
+            <div id="readme-loading" class="text-center py-16 hidden">
+              <div class="inline-block w-8 h-8 border-3 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin mb-3"></div>
+              <p class="text-slate-400 text-xs">Loading README.md...</p>
+            </div>
+
+            <!-- README Content -->
+            <div id="detail-readme" class="prose prose-invert prose-indigo prose-lg max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-indigo-400 prose-img:rounded-2xl prose-pre:bg-slate-950 prose-pre:border prose-pre:border-white/10">
+            </div>
+          </div>
+
+          <!-- Section 2: Markdown Files & Stories List -->
+          <div id="section-files" class="hidden">
+            <div class="mb-4 text-sm text-slate-400">
+              Click any file or story below to read it directly:
+            </div>
+            <div id="repo-files-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Dynamically populated files -->
+            </div>
+          </div>
+
+          <!-- Section 3: In-Repo Markdown File Reader -->
+          <div id="section-file-reader" class="hidden">
+            <div class="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
+              <button id="back-to-file-list-btn" class="text-xs font-semibold text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3.5 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer">
+                &larr; Back to Files
+              </button>
+              <span id="active-file-path" class="text-xs font-mono text-slate-400 truncate max-w-xs md:max-w-md"></span>
+            </div>
+            <div id="active-file-content" class="prose prose-invert prose-indigo prose-lg max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-indigo-400 prose-img:rounded-2xl">
+              <!-- Content rendered here -->
+            </div>
           </div>
         </article>
       </div>
@@ -174,6 +210,45 @@ import Layout from '../../layouts/Layout.astro';
   const repoGithubBtn = document.getElementById('repo-github-btn') as HTMLAnchorElement;
   const detailReadme = document.getElementById('detail-readme');
   const readmeLoading = document.getElementById('readme-loading');
+
+  // Tabs & File Explorer Elements
+  const tabReadmeBtn = document.getElementById('tab-readme-btn');
+  const tabFilesBtn = document.getElementById('tab-files-btn');
+  const sectionReadme = document.getElementById('section-readme');
+  const sectionFiles = document.getElementById('section-files');
+  const sectionFileReader = document.getElementById('section-file-reader');
+  const repoFilesCount = document.getElementById('repo-files-count');
+  const repoFilesList = document.getElementById('repo-files-list');
+  const backToFilesBtn = document.getElementById('back-to-file-list-btn');
+  const activeFilePath = document.getElementById('active-file-path');
+  const activeFileContent = document.getElementById('active-file-content');
+
+  let currentRepo: RepoMeta | null = null;
+  let currentRepoFiles: any[] = [];
+
+  function switchTab(tab: 'readme' | 'files' | 'reader') {
+    if (tab === 'readme') {
+      sectionReadme?.classList.remove('hidden');
+      sectionFiles?.classList.add('hidden');
+      sectionFileReader?.classList.add('hidden');
+      if (tabReadmeBtn) tabReadmeBtn.className = 'px-4 py-2 rounded-xl text-xs md:text-sm font-semibold bg-indigo-600 text-white transition-all shadow-md cursor-pointer';
+      if (tabFilesBtn) tabFilesBtn.className = 'px-4 py-2 rounded-xl text-xs md:text-sm font-semibold bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700 transition-all cursor-pointer';
+    } else if (tab === 'files') {
+      sectionReadme?.classList.add('hidden');
+      sectionFiles?.classList.remove('hidden');
+      sectionFileReader?.classList.add('hidden');
+      if (tabFilesBtn) tabFilesBtn.className = 'px-4 py-2 rounded-xl text-xs md:text-sm font-semibold bg-indigo-600 text-white transition-all shadow-md cursor-pointer';
+      if (tabReadmeBtn) tabReadmeBtn.className = 'px-4 py-2 rounded-xl text-xs md:text-sm font-semibold bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700 transition-all cursor-pointer';
+    } else if (tab === 'reader') {
+      sectionReadme?.classList.add('hidden');
+      sectionFiles?.classList.add('hidden');
+      sectionFileReader?.classList.remove('hidden');
+    }
+  }
+
+  tabReadmeBtn?.addEventListener('click', () => switchTab('readme'));
+  tabFilesBtn?.addEventListener('click', () => switchTab('files'));
+  backToFilesBtn?.addEventListener('click', () => switchTab('files'));
 
   async function loadRepos() {
     try {
@@ -360,18 +435,20 @@ import Layout from '../../layouts/Layout.astro';
       repoGithubBtn.href = repo.html_url;
     }
 
+    currentRepo = repo;
+    switchTab('readme');
+
     // Fetch README
     if (detailReadme) detailReadme.innerHTML = '';
     readmeLoading?.classList.remove('hidden');
 
     try {
       let readmeMd = '';
-      // Try raw githubusercontent
-      const rawRes = await fetch(`https://raw.githubusercontent.com/${GITHUB_USER}/${repo.name}/${repo.default_branch || 'main'}/README.md`);
+      const activeBranch = repo.default_branch || 'main';
+      const rawRes = await fetch(`https://raw.githubusercontent.com/${GITHUB_USER}/${repo.name}/${activeBranch}/README.md`);
       if (rawRes.ok) {
         readmeMd = await rawRes.text();
       } else {
-        // Fallback to GitHub API readme
         const apiRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${repo.name}/readme`);
         if (apiRes.ok) {
           const apiData = await apiRes.json();
@@ -387,6 +464,23 @@ import Layout from '../../layouts/Layout.astro';
       if (detailReadme) {
         if (readmeMd) {
           detailReadme.innerHTML = marked.parse(readmeMd);
+
+          // Intercept links inside README so clicking on stories or folders opens them directly!
+          detailReadme.querySelectorAll('a').forEach(a => {
+            const href = a.getAttribute('href');
+            if (href && !href.startsWith('http') && !href.startsWith('#')) {
+              a.addEventListener('click', (ev) => {
+                ev.preventDefault();
+                const cleanHref = href.replace(/^\.?\//, '').toLowerCase();
+                const matchedFile = currentRepoFiles.find(f => f.path.toLowerCase().includes(cleanHref));
+                if (matchedFile) {
+                  openRepoFile(repo, matchedFile.path);
+                } else {
+                  switchTab('files');
+                }
+              });
+            }
+          });
         } else {
           detailReadme.innerHTML = '<p class="text-slate-400 italic">No README.md found in this repository.</p>';
         }
@@ -395,6 +489,58 @@ import Layout from '../../layouts/Layout.astro';
       readmeLoading?.classList.add('hidden');
       if (detailReadme) {
         detailReadme.innerHTML = '<p class="text-slate-400 italic">Could not load README.</p>';
+      }
+    }
+
+    // Fetch all files in the repository for the Files / Stories tab
+    currentRepoFiles = [];
+    try {
+      const activeBranch = repo.default_branch || 'main';
+      const treeRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${repo.name}/git/trees/${activeBranch}?recursive=1`);
+      if (treeRes.ok) {
+        const treeData = await treeRes.json();
+        currentRepoFiles = (treeData.tree || []).filter((item: any) => 
+          item.type === 'blob' && /\.(md|markdown|txt)$/i.test(item.path) && !/readme\.md$/i.test(item.path)
+        );
+      }
+    } catch (_) {}
+
+    if (repoFilesCount) repoFilesCount.textContent = String(currentRepoFiles.length);
+
+    if (repoFilesList) {
+      if (currentRepoFiles.length === 0) {
+        repoFilesList.innerHTML = '<p class="col-span-full text-slate-400 py-6 text-sm">No additional markdown files or stories found in this repository.</p>';
+      } else {
+        repoFilesList.innerHTML = currentRepoFiles.map((f: any) => {
+          const parts = f.path.split('/');
+          const filename = parts.pop();
+          const folder = parts.join(' / ') || 'root';
+          const isHindi = f.path.toLowerCase().includes('_hi.') || f.path.toLowerCase().includes('hindi');
+          const isEnglish = f.path.toLowerCase().includes('_en.') || f.path.toLowerCase().includes('english');
+
+          return `
+            <div data-file-path="${f.path}" class="repo-file-card p-5 rounded-2xl bg-slate-950/60 border border-white/5 hover:border-indigo-500/50 hover:bg-slate-800/60 transition-all cursor-pointer flex flex-col justify-between group">
+              <div>
+                <div class="flex items-center justify-between gap-2 mb-2">
+                  <span class="text-[11px] font-mono text-indigo-400 truncate">${folder}</span>
+                  ${isHindi ? '<span class="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded font-bold">🇮🇳 Hindi</span>' : ''}
+                  ${isEnglish ? '<span class="text-[10px] bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded font-bold">🇺🇸 English</span>' : ''}
+                </div>
+                <h4 class="text-base font-bold text-white group-hover:text-indigo-300 transition-colors mb-1 truncate">${filename}</h4>
+              </div>
+              <div class="mt-4 text-xs text-indigo-400 font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                Read Story / Page &rarr;
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        repoFilesList.querySelectorAll('.repo-file-card').forEach(card => {
+          card.addEventListener('click', () => {
+            const path = card.getAttribute('data-file-path');
+            if (path) openRepoFile(repo, path);
+          });
+        });
       }
     }
 
@@ -409,6 +555,50 @@ import Layout from '../../layouts/Layout.astro';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  async function openRepoFile(repo: RepoMeta, filePath: string) {
+    switchTab('reader');
+    if (activeFilePath) activeFilePath.textContent = filePath;
+    if (activeFileContent) {
+      activeFileContent.innerHTML = '<div class="py-16 text-center text-slate-400"><div class="inline-block w-8 h-8 border-3 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin mb-3"></div><p>Loading file...</p></div>';
+    }
+
+    try {
+      let rawText = '';
+      const activeBranch = repo.default_branch || 'main';
+      const rawRes = await fetch(`https://raw.githubusercontent.com/${GITHUB_USER}/${repo.name}/${activeBranch}/${filePath}`);
+      if (rawRes.ok) {
+        rawText = await rawRes.text();
+      } else {
+        const apiRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${repo.name}/contents/${filePath}?ref=${activeBranch}`);
+        if (apiRes.ok) {
+          const apiData = await apiRes.json();
+          if (apiData.content) {
+            const binaryString = atob(apiData.content.replace(/\s/g, ''));
+            const bytes = Uint8Array.from(binaryString, c => c.charCodeAt(0));
+            rawText = new TextDecoder('utf-8').decode(bytes);
+          }
+        }
+      }
+
+      if (activeFileContent) {
+        // Strip frontmatter from display
+        const cleanText = rawText.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, '');
+        activeFileContent.innerHTML = marked.parse(cleanText || rawText);
+      }
+
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.set('repo', repo.name);
+      newUrl.searchParams.set('file', filePath);
+      history.pushState({ repoName: repo.name, filePath }, filePath, newUrl.toString());
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    } catch (e: any) {
+      if (activeFileContent) {
+        activeFileContent.innerHTML = `<p class="text-red-400 py-8 text-center">Failed to load file: ${e.message}</p>`;
+      }
+    }
+  }
+
   function closeRepoDetail() {
     detailView?.classList.add('hidden');
     catalogView?.classList.remove('hidden');
@@ -421,6 +611,7 @@ import Layout from '../../layouts/Layout.astro';
   function checkDeepLink() {
     const urlParams = new URLSearchParams(window.location.search);
     const repoParam = urlParams.get('repo') || urlParams.get('name') || urlParams.get('slug');
+    const fileParam = urlParams.get('file');
     const hash = window.location.hash.replace(/^#/, '');
 
     const target = repoParam || (hash.startsWith('repo=') ? hash.replace('repo=', '') : hash);
@@ -430,6 +621,9 @@ import Layout from '../../layouts/Layout.astro';
       const repo = allRepos.find(r => r.name.toLowerCase() === decoded);
       if (repo) {
         openRepoDetail(repo, false);
+        if (fileParam) {
+          openRepoFile(repo, decodeURIComponent(fileParam));
+        }
       }
     }
   }
