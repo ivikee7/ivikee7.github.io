@@ -1,0 +1,56 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="404 — Page Not Found | Ivikee7">
+  <!-- Instant SPA redirect script for GitHub Pages deep slugs -->
+  <script is:inline>
+    (function() {
+      var path = window.location.pathname;
+      // Handle /stories/slug routing
+      if (path.indexOf('/stories/') === 0) {
+        var storySlug = path.substring(9);
+        if (storySlug) {
+          window.location.replace('/stories?story=' + encodeURIComponent(storySlug));
+          return;
+        }
+      }
+      // Handle /repos/slug routing
+      if (path.indexOf('/repos/') === 0) {
+        var repoSlug = path.substring(7);
+        if (repoSlug) {
+          window.location.replace('/repos?repo=' + encodeURIComponent(repoSlug));
+          return;
+        }
+      }
+    })();
+  </script>
+
+  <main class="min-h-[70vh] flex flex-col items-center justify-center px-6 text-center">
+    <div class="relative">
+      <div class="absolute inset-0 bg-purple-600/20 rounded-full blur-3xl -z-10"></div>
+      <span class="text-8xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400">
+        404
+      </span>
+    </div>
+
+    <h1 class="text-2xl md:text-4xl font-bold text-white mt-6 mb-3">
+      Page Not Found
+    </h1>
+    <p class="text-slate-400 max-w-md mx-auto text-base mb-8">
+      The page or resource you are looking for doesn't exist or has moved.
+    </p>
+
+    <div class="flex flex-wrap items-center justify-center gap-4">
+      <a href="/" class="px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm transition-all shadow-lg shadow-purple-600/30">
+        &larr; Back to Home
+      </a>
+      <a href="/stories" class="px-6 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-white/10 font-semibold text-sm transition-all">
+        Browse Stories Vault
+      </a>
+      <a href="/repos" class="px-6 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-white/10 font-semibold text-sm transition-all">
+        Explore Repositories
+      </a>
+    </div>
+  </main>
+</Layout>

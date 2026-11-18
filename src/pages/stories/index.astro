@@ -1,0 +1,753 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout 
+  title="Stories & Kahani Vault | Ivikee7" 
+  description="Explore AI-generated stories, long kahani, cinematic video scripts, and prompt bibles live from the vault."
+>
+  <main class="max-w-7xl mx-auto px-6 py-16 md:py-24">
+    <!-- Header Section -->
+    <div class="mb-12 text-center max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-semibold mb-4">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        Live Connected to <a href="https://github.com/ivikee7/stories" target="_blank" rel="noopener noreferrer" class="underline hover:text-purple-300 ml-1">ivikee7/stories</a>
+      </div>
+      <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-indigo-300 via-purple-300 to-pink-400 mb-6">
+        Stories & Kahani Vault
+      </h1>
+      <p class="text-slate-400 text-base md:text-xl leading-relaxed">
+        Cinematic narratives, long-form kahani, video generation scripts, and AI prompt bibles — updated in real time.
+      </p>
+    </div>
+
+    <!-- Reader Mode View (Hidden by default, shown when a story is active) -->
+    <div id="story-reader-view" class="hidden">
+      <div class="max-w-4xl mx-auto">
+        <div class="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
+          <button id="back-to-catalog" class="inline-flex items-center gap-2 text-sm font-semibold text-purple-400 hover:text-purple-300 bg-purple-500/10 hover:bg-purple-500/20 px-4 py-2 rounded-full transition-all cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to All Stories
+          </button>
+          
+          <div class="flex items-center gap-3">
+            <button id="copy-story-link" class="text-xs text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-white/10 transition-colors flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              <span>Copy Link</span>
+            </button>
+            <a id="view-on-github-link" href="#" target="_blank" rel="noopener noreferrer" class="text-xs text-purple-400 hover:text-purple-300 bg-purple-500/10 px-3 py-1.5 rounded-lg border border-purple-500/20 transition-colors">
+              GitHub &rarr;
+            </a>
+          </div>
+        </div>
+
+        <article class="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-12 shadow-2xl">
+          <!-- Story Header -->
+          <header class="mb-10 pb-8 border-b border-white/10">
+            <div class="flex flex-wrap items-center gap-3 mb-4">
+              <span id="reader-category" class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30"></span>
+              <span id="reader-read-time" class="text-xs text-slate-400"></span>
+              <span id="reader-date" class="text-xs text-slate-400"></span>
+            </div>
+            <h1 id="reader-title" class="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight mb-4"></h1>
+            <p id="reader-summary" class="text-lg text-slate-300 font-light leading-relaxed"></p>
+            <div id="reader-tags" class="flex flex-wrap gap-2 mt-4"></div>
+          </header>
+
+          <!-- AI Prompts Box (Shown if story has prompts) -->
+          <div id="reader-prompts-box" class="hidden mb-10 rounded-2xl bg-gradient-to-br from-indigo-950/40 to-purple-950/40 border border-purple-500/30 p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2 text-purple-300 font-bold text-sm tracking-wide uppercase">
+                <svg class="w-4 h-4 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                AI Video & Generation Prompts
+              </div>
+              <button id="copy-prompts-btn" class="text-xs font-semibold bg-purple-600 hover:bg-purple-500 text-white px-3 py-1 rounded-md transition-colors flex items-center gap-1">
+                <span>Copy Prompt</span>
+              </button>
+            </div>
+            <div id="reader-prompts-content" class="text-sm font-mono text-slate-300 space-y-3 whitespace-pre-wrap bg-slate-950/70 p-4 rounded-xl border border-white/5"></div>
+          </div>
+
+          <!-- Story Narrative Content -->
+          <div id="reader-content" class="prose prose-invert prose-purple prose-lg max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-purple-400 prose-p:leading-relaxed prose-img:rounded-2xl">
+            <!-- Dynamic Markdown will be injected here -->
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <!-- Catalog Explorer View (Default View) -->
+    <div id="story-catalog-view">
+      <!-- Search & Filters -->
+      <div class="mb-10 space-y-6">
+        <!-- Search Bar -->
+        <div class="relative max-w-xl mx-auto">
+          <input 
+            type="text" 
+            id="story-search" 
+            placeholder="Search stories, topics, prompts, or tags..." 
+            class="w-full pl-12 pr-4 py-3.5 bg-slate-900/80 border border-white/10 rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all shadow-inner"
+          />
+          <svg class="w-5 h-5 text-slate-500 absolute left-4 top-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+
+        <!-- Category Pills -->
+        <div id="category-pills" class="flex flex-wrap items-center justify-center gap-2">
+          <button data-category="all" class="category-pill active px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all bg-purple-600 text-white shadow-lg shadow-purple-600/30">
+            All Stories (<span id="count-all">0</span>)
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="stories-loading" class="text-center py-24">
+        <div class="inline-block w-10 h-10 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin mb-4"></div>
+        <p class="text-slate-400 text-sm">Fetching stories from <code class="text-purple-300">ivikee7/stories</code>...</p>
+      </div>
+
+      <!-- Error State -->
+      <div id="stories-error" class="hidden max-w-xl mx-auto text-center py-16 px-6 rounded-3xl bg-red-950/20 border border-red-500/30">
+        <div class="text-red-400 text-3xl mb-3">⚠️</div>
+        <h3 class="text-xl font-bold text-white mb-2">Unable to Load Stories</h3>
+        <p id="error-message" class="text-slate-400 text-sm mb-6"></p>
+        <button id="retry-btn" class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-sm font-semibold transition-colors">
+          Retry Fetching
+        </button>
+      </div>
+
+      <!-- Empty / Getting Started State -->
+      <div id="stories-empty" class="hidden max-w-2xl mx-auto text-center py-16 px-8 rounded-3xl bg-slate-900/40 border border-white/10 backdrop-blur-sm">
+        <div class="text-4xl mb-4">📖</div>
+        <h3 class="text-2xl font-bold text-white mb-3">Your Stories Vault is Ready!</h3>
+        <p class="text-slate-400 text-sm leading-relaxed mb-6">
+          Your website is live-synced with <a href="https://github.com/ivikee7/stories" target="_blank" class="text-purple-400 underline">github.com/ivikee7/stories</a>. 
+          To add stories, simply push markdown (<code class="text-purple-300">.md</code>) files into your repo.
+        </p>
+
+        <div class="text-left bg-slate-950 p-5 rounded-2xl border border-white/5 text-xs font-mono text-slate-300 mb-6 overflow-x-auto">
+          <p class="text-slate-500 mb-2">// Example file: stories/kahani/lost-realm.md</p>
+          <pre>---
+title: "The Lost Realm"
+category: "kahani"
+summary: "An ancient king discovers a hidden gateway beneath the Himalayas."
+tags: ["kahani", "ancient", "adventure"]
+prompts:
+  video_prompt: "Cinematic drone shot of Himalayan snow peaks at sunset, 8k..."
+---
+
+Your full story narrative starts here...</pre>
+        </div>
+
+        <a href="https://github.com/ivikee7/stories/new/main" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm transition-all shadow-lg shadow-purple-600/30">
+          Create First Story on GitHub &rarr;
+        </a>
+      </div>
+
+      <!-- Stories Grid -->
+      <div id="stories-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { marked } from 'https://cdn.jsdelivr.net/npm/marked@15.0.7/+esm';
+
+  const GITHUB_REPO = 'ivikee7/stories';
+  const BRANCH = 'main';
+  const GITHUB_TREE_URL = `https://api.github.com/repos/${GITHUB_REPO}/git/trees/${BRANCH}?recursive=1`;
+  const RAW_CONTENT_BASE = `https://raw.githubusercontent.com/ivikee7/${GITHUB_REPO.split('/')[1]}/${BRANCH}`;
+  const JSDELIVR_BASE = `https://cdn.jsdelivr.net/gh/${GITHUB_REPO}@${BRANCH}`;
+
+  interface StoryMeta {
+    path: string;
+    slug: string;
+    title: string;
+    category: string;
+    categoryDisplay: string;
+    language?: string;
+    summary: string;
+    tags: string[];
+    date?: string;
+    prompts?: Record<string, any>;
+    content?: string;
+    readTime?: string;
+  }
+
+  let allStories: StoryMeta[] = [];
+  let currentCategory = 'all';
+  let searchQuery = '';
+
+  const loadingEl = document.getElementById('stories-loading');
+  const errorEl = document.getElementById('stories-error');
+  const errorMessageEl = document.getElementById('error-message');
+  const emptyEl = document.getElementById('stories-empty');
+  const gridEl = document.getElementById('stories-grid');
+  const pillsEl = document.getElementById('category-pills');
+  const searchInput = document.getElementById('story-search') as HTMLInputElement;
+  const countAllEl = document.getElementById('count-all');
+  const catalogView = document.getElementById('story-catalog-view');
+  const readerView = document.getElementById('story-reader-view');
+  const retryBtn = document.getElementById('retry-btn');
+
+  // Reader Elements
+  const backToCatalogBtn = document.getElementById('back-to-catalog');
+  const readerCategory = document.getElementById('reader-category');
+  const readerReadTime = document.getElementById('reader-read-time');
+  const readerDate = document.getElementById('reader-date');
+  const readerTitle = document.getElementById('reader-title');
+  const readerSummary = document.getElementById('reader-summary');
+  const readerTags = document.getElementById('reader-tags');
+  const readerContent = document.getElementById('reader-content');
+  const readerPromptsBox = document.getElementById('reader-prompts-box');
+  const readerPromptsContent = document.getElementById('reader-prompts-content');
+  const copyPromptsBtn = document.getElementById('copy-prompts-btn');
+  const copyStoryLink = document.getElementById('copy-story-link');
+  const viewOnGithubLink = document.getElementById('view-on-github-link') as HTMLAnchorElement;
+
+  // Simple client-side YAML frontmatter parser
+  function parseFrontmatter(rawText: string) {
+    let metadata: Record<string, any> = {};
+    let content = rawText;
+
+    const match = rawText.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
+    if (match) {
+      const yamlBlock = match[1];
+      content = match[2];
+
+      const lines = yamlBlock.split('\n');
+      let currentKey = '';
+      let isInPromptsBlock = false;
+      let promptsObj: Record<string, string> = {};
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith('#')) continue;
+
+        if (trimmed.startsWith('prompts:')) {
+          isInPromptsBlock = true;
+          continue;
+        }
+
+        if (isInPromptsBlock && line.startsWith('  ')) {
+          const colonIdx = trimmed.indexOf(':');
+          if (colonIdx !== -1) {
+            const pKey = trimmed.slice(0, colonIdx).trim();
+            const pVal = trimmed.slice(colonIdx + 1).trim().replace(/^["']|["']$/g, '');
+            promptsObj[pKey] = pVal;
+          }
+          continue;
+        } else {
+          isInPromptsBlock = false;
+        }
+
+        const colonIdx = line.indexOf(':');
+        if (colonIdx !== -1) {
+          const key = line.slice(0, colonIdx).trim();
+          let value = line.slice(colonIdx + 1).trim().replace(/^["']|["']$/g, '');
+
+          // Check array syntax [a, b, c]
+          if (value.startsWith('[') && value.endsWith(']')) {
+            metadata[key] = value.slice(1, -1).split(',').map(s => s.trim().replace(/^["']|["']$/g, ''));
+          } else {
+            metadata[key] = value;
+          }
+        }
+      }
+
+      if (Object.keys(promptsObj).length > 0) {
+        metadata['prompts'] = promptsObj;
+      }
+    }
+
+    return { metadata, content };
+  }
+
+  // Format helpers
+  function formatTitleFromSlug(slug: string): string {
+    return slug
+      .replace(/[_-]/g, ' ')
+      .replace(/\b\w/g, c => c.toUpperCase());
+  }
+
+  function formatCategoryName(cat: string): string {
+    return cat
+      .replace(/_/g, ' ')
+      .replace(/-/g, ' ')
+      .replace(/\band\b/gi, '&')
+      .replace(/\b\w/g, c => c.toUpperCase());
+  }
+
+  // Calculate read time
+  function calculateReadTime(text: string): string {
+    const words = text.trim().split(/\s+/).length;
+    const minutes = Math.ceil(words / 200);
+    return `${minutes} min read`;
+  }
+
+  // Fetch story file content with 3-tier fallback (Raw -> CDN -> API Base64)
+  async function fetchStoryContent(filePath: string, branch = 'main'): Promise<string> {
+    // 1. Try raw.githubusercontent.com directly
+    try {
+      const res = await fetch(`https://raw.githubusercontent.com/${GITHUB_REPO}/${branch}/${filePath}`);
+      if (res.ok) return await res.text();
+    } catch (_) {}
+
+    // 2. Try jsDelivr CDN
+    try {
+      const cdnRes = await fetch(`https://cdn.jsdelivr.net/gh/${GITHUB_REPO}@${branch}/${filePath}`);
+      if (cdnRes.ok) return await cdnRes.text();
+    } catch (_) {}
+
+    // 3. Fallback to GitHub API (handles Unicode & Devanagari/Hindi properly)
+    try {
+      const apiRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}?ref=${branch}`);
+      if (apiRes.ok) {
+        const fileData = await apiRes.json();
+        if (fileData.content) {
+          const binaryString = atob(fileData.content.replace(/\s/g, ''));
+          const bytes = Uint8Array.from(binaryString, c => c.charCodeAt(0));
+          return new TextDecoder('utf-8').decode(bytes);
+        }
+      }
+    } catch (_) {}
+
+    throw new Error(`Could not fetch story file: ${filePath}`);
+  }
+
+  // Fetch all stories metadata from GitHub tree API
+  async function loadStories() {
+    try {
+      loadingEl?.classList.remove('hidden');
+      errorEl?.classList.add('hidden');
+      emptyEl?.classList.add('hidden');
+      if (gridEl) gridEl.innerHTML = '';
+
+      let tree: any[] = [];
+      let activeBranch = BRANCH;
+
+      // 1. Check repository info to determine default branch and empty status
+      try {
+        const repoRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}`);
+        if (repoRes.ok) {
+          const repoData = await repoRes.json();
+          activeBranch = repoData.default_branch || 'main';
+          if (repoData.size === 0) {
+            // Brand new repo with 0 commits
+            showEmpty();
+            return;
+          }
+        } else if (repoRes.status === 404) {
+          throw new Error(`Repository https://github.com/${GITHUB_REPO} was not found. Please ensure the repository is Public and the name matches.`);
+        } else if (repoRes.status === 403) {
+          throw new Error('GitHub API hourly rate limit reached. Please wait a few minutes or retry.');
+        }
+      } catch (err: any) {
+        if (err.message && (err.message.includes('not found') || err.message.includes('rate limit'))) {
+          throw err;
+        }
+      }
+
+      // 2. Fetch tree from git trees API
+      const treeUrl = `https://api.github.com/repos/${GITHUB_REPO}/git/trees/${activeBranch}?recursive=1`;
+      const res = await fetch(treeUrl);
+
+      if (!res.ok) {
+        // Status 409: "Git Repository is empty"
+        // Status 404: Branch or tree not created yet
+        if (res.status === 409 || res.status === 404) {
+          showEmpty();
+          return;
+        } else if (res.status === 403) {
+          throw new Error('GitHub API rate limit exceeded. Please retry in a few moments.');
+        } else {
+          // Try fallback to master branch
+          const fallbackRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/trees/master?recursive=1`);
+          if (fallbackRes.ok) {
+            const data = await fallbackRes.json();
+            tree = data.tree || [];
+          } else {
+            showEmpty();
+            return;
+          }
+        }
+      } else {
+        const data = await res.json();
+        tree = data.tree || [];
+      }
+
+      // Filter for markdown and text files, excluding README.md
+      const storyFiles = tree.filter((item: any) => 
+        item.type === 'blob' && 
+        /\.(md|markdown|txt)$/i.test(item.path) &&
+        !/readme\.md$/i.test(item.path)
+      );
+
+      if (storyFiles.length === 0) {
+        showEmpty();
+        return;
+      }
+
+      // Fetch headers/frontmatter for each story safely in parallel
+      const parsedStories = await Promise.all(
+        storyFiles.map(async (file: any): Promise<StoryMeta | null> => {
+          try {
+            const raw = await fetchStoryContent(file.path, activeBranch);
+            const { metadata, content } = parseFrontmatter(raw);
+
+            // Path hierarchy handling (e.g. folktales_and_fables/bandar-aur-magarmach/story_hi.md)
+            const pathSegments = file.path.split('/');
+            let rawCategory = 'general';
+            let storyFolder = '';
+            let fileName = pathSegments[pathSegments.length - 1];
+
+            if (pathSegments.length >= 3) {
+              rawCategory = pathSegments[0];
+              storyFolder = pathSegments[1];
+            } else if (pathSegments.length === 2) {
+              rawCategory = pathSegments[0];
+              storyFolder = fileName.replace(/\.[^/.]+$/, '');
+            } else {
+              storyFolder = fileName.replace(/\.[^/.]+$/, '');
+            }
+
+            const categoryKey = (metadata.category || rawCategory).toLowerCase();
+            const categoryDisplay = formatCategoryName(categoryKey);
+
+            // Language detection
+            let language = metadata.language || '';
+            const lowerPath = file.path.toLowerCase();
+            if (!language) {
+              if (lowerPath.includes('_hi.') || lowerPath.includes('-hi.') || lowerPath.includes('hindi')) {
+                language = 'Hindi';
+              } else if (lowerPath.includes('_en.') || lowerPath.includes('-en.') || lowerPath.includes('english')) {
+                language = 'English';
+              }
+            }
+
+            // Title resolution
+            let title = metadata.title;
+            if (!title) {
+              const headingMatch = content.match(/^#\s+(.+)$/m);
+              if (headingMatch && headingMatch[1].trim()) {
+                title = headingMatch[1].trim();
+              } else if (storyFolder) {
+                title = formatTitleFromSlug(storyFolder);
+                if (language && !title.toLowerCase().includes(language.toLowerCase())) {
+                  title += ` (${language})`;
+                }
+              } else {
+                title = fileName.replace(/\.[^/.]+$/, '');
+              }
+            }
+
+            // Tags
+            let tags: string[] = [];
+            if (Array.isArray(metadata.tags)) {
+              tags = metadata.tags;
+            } else if (metadata.tags) {
+              tags = [String(metadata.tags)];
+            }
+            if (language && !tags.some(t => t.toLowerCase() === language.toLowerCase())) {
+              tags.push(language.toLowerCase());
+            }
+
+            return {
+              path: file.path,
+              slug: encodeURIComponent(file.path),
+              title: title || 'Untitled Story',
+              category: categoryKey,
+              categoryDisplay,
+              language,
+              summary: metadata.summary || metadata.description || content.slice(0, 160).replace(/[#*`_]/g, '').trim() + '...',
+              tags,
+              date: metadata.date || '',
+              prompts: metadata.prompts,
+              content,
+              readTime: calculateReadTime(content)
+            };
+          } catch (e) {
+            console.warn(`Could not load story file: ${file.path}`, e);
+            return null;
+          }
+        })
+      );
+
+      allStories = parsedStories.filter((s): s is StoryMeta => s !== null);
+
+      if (allStories.length === 0) {
+        showEmpty();
+        return;
+      }
+
+      renderCategories();
+      renderGrid();
+      checkDeepLink();
+
+    } catch (err: any) {
+      console.error(err);
+      loadingEl?.classList.add('hidden');
+      errorEl?.classList.remove('hidden');
+      if (errorMessageEl) {
+        errorMessageEl.textContent = err.message || 'Failed to connect to GitHub repository.';
+      }
+    } finally {
+      loadingEl?.classList.add('hidden');
+    }
+  }
+
+  function showEmpty() {
+    loadingEl?.classList.add('hidden');
+    emptyEl?.classList.remove('hidden');
+    if (countAllEl) countAllEl.textContent = '0';
+  }
+
+  function renderCategories() {
+    const categoriesMap = new Map<string, string>();
+    allStories.forEach(s => {
+      categoriesMap.set(s.category, s.categoryDisplay);
+    });
+
+    if (countAllEl) countAllEl.textContent = String(allStories.length);
+
+    if (!pillsEl) return;
+    pillsEl.innerHTML = `
+      <button data-category="all" class="category-pill active px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all bg-purple-600 text-white shadow-lg shadow-purple-600/30">
+        All Stories (${allStories.length})
+      </button>
+      ${Array.from(categoriesMap.entries()).map(([catKey, catName]) => {
+        const count = allStories.filter(s => s.category === catKey).length;
+        return `
+          <button data-category="${catKey}" class="category-pill px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-white/10">
+            ${catName} (${count})
+          </button>
+        `;
+      }).join('')}
+    `;
+
+    pillsEl.querySelectorAll('.category-pill').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLButtonElement;
+        const cat = target.getAttribute('data-category') || 'all';
+        currentCategory = cat;
+
+        pillsEl.querySelectorAll('.category-pill').forEach(b => {
+          b.className = 'category-pill px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-white/10';
+        });
+
+        target.className = 'category-pill active px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all bg-purple-600 text-white shadow-lg shadow-purple-600/30';
+        renderGrid();
+      });
+    });
+  }
+
+  function renderGrid() {
+    if (!gridEl) return;
+
+    const filtered = allStories.filter(story => {
+      const matchesCategory = currentCategory === 'all' || story.category === currentCategory;
+      const q = searchQuery.toLowerCase();
+      const matchesSearch = !q || 
+        story.title.toLowerCase().includes(q) || 
+        story.summary.toLowerCase().includes(q) ||
+        story.categoryDisplay.toLowerCase().includes(q) ||
+        (story.language && story.language.toLowerCase().includes(q)) ||
+        story.tags.some(t => t.toLowerCase().includes(q));
+
+      return matchesCategory && matchesSearch;
+    });
+
+    if (filtered.length === 0) {
+      gridEl.innerHTML = `
+        <div class="col-span-full text-center py-16">
+          <p class="text-slate-400 text-lg">No stories found matching your filter.</p>
+        </div>
+      `;
+      return;
+    }
+
+    gridEl.innerHTML = filtered.map(story => `
+      <div 
+        data-story-path="${story.path}"
+        class="story-card group relative flex flex-col justify-between rounded-3xl bg-slate-900/40 backdrop-blur-sm border border-white/10 p-7 hover:bg-slate-800/60 hover:border-purple-500/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_40px_rgba(168,85,247,0.15)] cursor-pointer"
+      >
+        <div>
+          <div class="flex items-center justify-between gap-2 mb-4">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider rounded-lg bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                ${story.categoryDisplay}
+              </span>
+              ${story.language ? `
+                <span class="px-2 py-0.5 text-[10px] font-bold rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  ${story.language === 'Hindi' ? '🇮🇳 ' : '🇺🇸 '}${story.language}
+                </span>
+              ` : ''}
+            </div>
+            <span class="text-xs text-slate-400">${story.readTime}</span>
+          </div>
+
+          <h3 class="text-xl font-bold text-white group-hover:text-purple-300 transition-colors mb-3 leading-snug">
+            ${story.title}
+          </h3>
+
+          <p class="text-slate-400 text-sm leading-relaxed mb-6 line-clamp-3">
+            ${story.summary}
+          </p>
+        </div>
+
+        <div>
+          ${story.tags.length > 0 ? `
+            <div class="flex flex-wrap gap-1.5 mb-6">
+              ${story.tags.slice(0, 3).map(tag => `
+                <span class="text-[10px] bg-slate-800/90 text-slate-400 px-2 py-0.5 rounded-md border border-white/5">#${tag}</span>
+              `).join('')}
+            </div>
+          ` : ''}
+
+          <div class="flex items-center text-purple-400 text-sm font-semibold group-hover:translate-x-1 transition-transform">
+            Read Story & Prompts &rarr;
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    gridEl.querySelectorAll('.story-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const path = card.getAttribute('data-story-path');
+        const story = allStories.find(s => s.path === path);
+        if (story) openStoryReader(story);
+      });
+    });
+  }
+
+  function openStoryReader(story: StoryMeta) {
+    if (readerCategory) {
+      readerCategory.textContent = story.categoryDisplay + (story.language ? ` • ${story.language}` : '');
+    }
+    if (readerReadTime) readerReadTime.textContent = `• ${story.readTime}`;
+    if (readerDate) readerDate.textContent = story.date ? `• ${story.date}` : '';
+    if (readerTitle) readerTitle.textContent = story.title;
+    if (readerSummary) readerSummary.textContent = story.summary;
+
+    if (readerTags) {
+      readerTags.innerHTML = story.tags.map(t => `
+        <span class="text-xs bg-slate-800 text-purple-300 px-2.5 py-1 rounded-lg border border-purple-500/20">#${t}</span>
+      `).join('');
+    }
+
+    // Prompts Box
+    if (story.prompts && Object.keys(story.prompts).length > 0) {
+      readerPromptsBox?.classList.remove('hidden');
+      if (readerPromptsContent) {
+        readerPromptsContent.innerHTML = Object.entries(story.prompts).map(([k, v]) => `
+          <div>
+            <span class="text-purple-400 font-bold">${k}:</span>
+            <span class="text-slate-200">${v}</span>
+          </div>
+        `).join('');
+      }
+
+      copyPromptsBtn?.addEventListener('click', () => {
+        const text = Object.entries(story.prompts!).map(([k, v]) => `${k}: ${v}`).join('\n\n');
+        navigator.clipboard.writeText(text);
+        const btnText = copyPromptsBtn.querySelector('span');
+        if (btnText) {
+          btnText.textContent = 'Copied!';
+          setTimeout(() => { btnText.textContent = 'Copy Prompt'; }, 2000);
+        }
+      });
+    } else {
+      readerPromptsBox?.classList.add('hidden');
+    }
+
+    // Markdown content render
+    if (readerContent && story.content) {
+      readerContent.innerHTML = marked.parse(story.content);
+    }
+
+    // View on GitHub link
+    if (viewOnGithubLink) {
+      viewOnGithubLink.href = `https://github.com/${GITHUB_REPO}/blob/${BRANCH}/${story.path}`;
+    }
+
+    if (updateUrl) {
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.set('story', story.path);
+      history.pushState({ storyPath: story.path }, story.title, newUrl.toString());
+    }
+
+    catalogView?.classList.add('hidden');
+    readerView?.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function closeStoryReader() {
+    readerView?.classList.add('hidden');
+    catalogView?.classList.remove('hidden');
+    const newUrl = new URL(window.location.href);
+    newUrl.searchParams.delete('story');
+    newUrl.searchParams.delete('slug');
+    newUrl.hash = '';
+    history.pushState({}, document.title, newUrl.pathname);
+  }
+
+  function checkDeepLink() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const storyParam = urlParams.get('story') || urlParams.get('slug');
+    const hash = window.location.hash.replace(/^#/, '');
+
+    const target = storyParam || (hash.startsWith('story=') ? hash.replace('story=', '') : hash);
+
+    if (target) {
+      const decoded = decodeURIComponent(target).toLowerCase();
+      const story = allStories.find(s => 
+        s.path.toLowerCase() === decoded ||
+        s.path.toLowerCase().endsWith(decoded) ||
+        s.path.toLowerCase().includes(decoded) ||
+        s.title.toLowerCase().includes(decoded)
+      );
+      if (story) {
+        openStoryReader(story, false);
+      }
+    }
+  }
+
+  // Event Listeners
+  backToCatalogBtn?.addEventListener('click', closeStoryReader);
+
+  searchInput?.addEventListener('input', (e) => {
+    searchQuery = (e.target as HTMLInputElement).value;
+    renderGrid();
+  });
+
+  retryBtn?.addEventListener('click', loadStories);
+
+  copyStoryLink?.addEventListener('click', () => {
+    navigator.clipboard.writeText(window.location.href);
+    const span = copyStoryLink.querySelector('span');
+    if (span) {
+      span.textContent = 'Copied!';
+      setTimeout(() => { span.textContent = 'Copy Link'; }, 2000);
+    }
+  });
+
+  window.addEventListener('popstate', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('story') || urlParams.get('slug') || window.location.hash) {
+      checkDeepLink();
+    } else {
+      readerView?.classList.add('hidden');
+      catalogView?.classList.remove('hidden');
+    }
+  });
+
+  // Initial fetch
+  loadStories();
+</script>
