@@ -500,7 +500,7 @@ import Layout from '../../layouts/Layout.astro';
       if (treeRes.ok) {
         const treeData = await treeRes.json();
         currentRepoFiles = (treeData.tree || []).filter((item: any) => 
-          item.type === 'blob' && /\.(md|markdown|txt)$/i.test(item.path) && !/readme\.md$/i.test(item.path)
+          item.type === 'blob' && /\.(md|markdown|txt|json)$/i.test(item.path) && !/readme\.md$/i.test(item.path) && !/package.*\.json$/i.test(item.path)
         );
       }
     } catch (_) {}
@@ -581,9 +581,37 @@ import Layout from '../../layouts/Layout.astro';
       }
 
       if (activeFileContent) {
-        // Strip frontmatter from display
-        const cleanText = rawText.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, '');
-        activeFileContent.innerHTML = marked.parse(cleanText || rawText);
+        let storyBanner = '';
+        if (repo.name.toLowerCase() === 'stories' && (filePath.endsWith('.json') || filePath.endsWith('.md'))) {
+          const cleanSlug = filePath.replace(/\.[^/.]+$/, '').split('/').pop();
+          storyBanner = `
+            <div class="mb-6 flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl bg-gradient-to-r from-purple-900/40 to-indigo-900/40 border border-purple-500/30 text-purple-200 shadow-xl">
+              <div class="flex items-center gap-2.5">
+                <span class="text-xl">🎬</span>
+                <div>
+                  <div class="font-bold text-sm text-white">Interactive Storyboard Available</div>
+                  <div class="text-xs text-purple-300">Read in dual Hindi / English, copy AI camera prompts, and view voice cast.</div>
+                </div>
+              </div>
+              <a href="/stories?story=${encodeURIComponent(cleanSlug || filePath)}" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition-all shadow-lg shadow-purple-600/30 flex items-center gap-1.5 whitespace-nowrap">
+                Open in Stories Vault &rarr;
+              </a>
+            </div>
+          `;
+        }
+
+        if (filePath.endsWith('.json')) {
+          try {
+            const data = JSON.parse(rawText);
+            activeFileContent.innerHTML = storyBanner + `<pre class="p-5 rounded-2xl bg-slate-950 font-mono text-xs text-slate-300 overflow-x-auto border border-white/5">${JSON.stringify(data, null, 2)}</pre>`;
+          } catch (_) {
+            activeFileContent.innerHTML = storyBanner + `<pre class="p-5 rounded-2xl bg-slate-950 font-mono text-xs text-slate-300 overflow-x-auto">${rawText}</pre>`;
+          }
+        } else {
+          // Strip frontmatter from display
+          const cleanText = rawText.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, '');
+          activeFileContent.innerHTML = storyBanner + marked.parse(cleanText || rawText);
+        }
       }
 
       const newUrl = new URL(window.location.href);

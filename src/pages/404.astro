@@ -7,11 +7,16 @@ import Layout from '../layouts/Layout.astro';
   <script is:inline>
     (function() {
       var path = window.location.pathname;
+      var search = window.location.search || '';
       // Handle /stories/slug routing
       if (path.indexOf('/stories/') === 0) {
         var storySlug = path.substring(9);
         if (storySlug) {
-          window.location.replace('/stories?story=' + encodeURIComponent(storySlug));
+          var target = '/stories?story=' + encodeURIComponent(storySlug);
+          if (search) {
+            target += (search.charAt(0) === '?' ? '&' : '?') + search.substring(search.charAt(0) === '?' ? 1 : 0);
+          }
+          window.location.replace(target);
           return;
         }
       }
@@ -19,7 +24,11 @@ import Layout from '../layouts/Layout.astro';
       if (path.indexOf('/repos/') === 0) {
         var repoSlug = path.substring(7);
         if (repoSlug) {
-          window.location.replace('/repos?repo=' + encodeURIComponent(repoSlug));
+          var target = '/repos?repo=' + encodeURIComponent(repoSlug);
+          if (search) {
+            target += (search.charAt(0) === '?' ? '&' : '?') + search.substring(search.charAt(0) === '?' ? 1 : 0);
+          }
+          window.location.replace(target);
           return;
         }
       }
