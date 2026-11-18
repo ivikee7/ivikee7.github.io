@@ -602,17 +602,23 @@ Your full story narrative starts here...</pre>
         </div>
       </div>
     `).join('');
-
-    gridEl.querySelectorAll('.story-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const path = card.getAttribute('data-story-path');
-        const story = allStories.find(s => s.path === path);
-        if (story) openStoryReader(story);
-      });
-    });
   }
 
-  function openStoryReader(story: StoryMeta) {
+  // Event delegation on grid: reliable clicks always
+  gridEl?.addEventListener('click', (e) => {
+    const card = (e.target as HTMLElement).closest('.story-card');
+    if (card) {
+      const path = card.getAttribute('data-story-path');
+      const story = allStories.find(s => s.path === path);
+      if (story) openStoryReader(story, true);
+    }
+  });
+
+  function openStoryReader(story: StoryMeta, updateUrl = true) {
+    catalogView?.classList.add('hidden');
+    readerView?.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
     if (readerCategory) {
       readerCategory.textContent = story.categoryDisplay + (story.language ? ` • ${story.language}` : '');
     }
@@ -696,10 +702,6 @@ Your full story narrative starts here...</pre>
       newUrl.searchParams.set('story', story.path);
       history.pushState({ storyPath: story.path }, story.title, newUrl.toString());
     }
-
-    catalogView?.classList.add('hidden');
-    readerView?.classList.remove('hidden');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function closeStoryReader() {
